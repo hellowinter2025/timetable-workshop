@@ -39,4 +39,5 @@ button{color:inherit}
 
 .schedule-editor{min-width:700px;grid-template-columns:64px repeat(6,minmax(92px,1fr))}
 .subject-cell:nth-child(7n){border-right:0}
-@media(max-width:680px){.schedule-editor[data-mobile-day="5"] .day-5{display:block}}
+.break-label{grid-column:1/8}
+@media(max-width:680px){.schedule-editor{min-width:0;grid-template-columns:62px 1fr}.break-label{grid-column:1/3}.schedule-editor[data-mobile-day="5"] .day-5{display:block}}
