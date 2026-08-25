@@ -1,31 +1,31 @@
 /* global PDFLib, fontkit */
 'use strict';
 
-const DAYS = ['星期一','星期二','星期三','星期四','星期五'];
+const DAYS = ['星期一','星期二','星期三','星期四','星期五','星期六'];
 const DEFAULT_ROWS = [
-  { label:'早读', time:'7:00-7:30', subjects:['英语','语文','英语','语文','英语'] },
-  { label:'一', time:'7:40-8:20', subjects:['英语','语文','生物','语文','物理'] },
-  { label:'二', time:'8:35-9:15', subjects:['生物','数学','数学','数学','英语'] },
+  { label:'早读', time:'7:00-7:30', subjects:['英语','语文','英语','语文','英语',''] },
+  { label:'一', time:'7:40-8:20', subjects:['化学','语文','生物','语文','物理','数学'] },
+  { label:'二', time:'8:35-9:15', subjects:['英语','数学','数学','数学','英语','化学'] },
   { label:'课间操', time:'9:15-9:55', break:true },
-  { label:'三', time:'9:55-10:35', subjects:['化学','英语','语文','语文','数学'] },
+  { label:'三', time:'9:55-10:35', subjects:['生物','英语','语文','语文','数学','物理'] },
   { label:'眼保健操', time:'10:45-10:50', break:true },
-  { label:'四', time:'10:50-11:30', subjects:['物理','化学','语文','英语','数学'] },
+  { label:'四', time:'10:50-11:30', subjects:['物理','化学','语文','英语','数学','英语'] },
   { label:'午    休', time:'11:30-13:50', break:true, noon:true },
-  { label:'五', time:'14:00-14:40', subjects:['语文','物理','体育','生物','英语'] },
-  { label:'六', time:'14:50-15:30', subjects:['语文','艺术','化学','物理','体育'] },
-  { label:'七', time:'15:40-16:20', subjects:['数学','英语','数学','英语','化学'] },
-  { label:'八', time:'16:30-17:10', subjects:['数学','体活','物理','体活','生物'] },
-  { label:'九', time:'17:20-18:00', subjects:['班会','生物','英语','化学','语文'] },
+  { label:'五', time:'14:00-14:40', subjects:['语文','物理','体育','生物','化学','生物'] },
+  { label:'六', time:'14:50-15:30', subjects:['语文','英语','化学','物理','体育','练习'] },
+  { label:'七', time:'15:40-16:20', subjects:['数学','语文','数学','英语','生物','练习'] },
+  { label:'八', time:'16:30-17:10', subjects:['数学','体活','物理','体活','英语','练习'] },
+  { label:'九', time:'17:20-18:00', subjects:['德育心理（双）','生物','英语','化学','语文','练习'] },
   { label:'晚饭', time:'18:00-19:40', break:true },
-  { label:'晚读', time:'18:40-19:10', subjects:['语文','英语','语文','英语','语文'] },
-  { label:'自习', time:'19:10-21:40', subjects:['化学','英语','物理','数学','生物'] }
+  { label:'晚读', time:'18:40-19:10', subjects:['语文','英语','语文','英语','语文',''] },
+  { label:'自习', time:'19:10-21:40', subjects:['化学','英语','物理','数学','生物',''] }
 ];
 const COLORS = {语文:'#ff0000',英语:'#7030a0',数学:'#92d050',物理:'#00b050',化学:'#00b0f0',生物:'#ff66cc',体育:'#0070c0',体活:'#8a58bd',艺术:'#9fca31',班会:'#f1d900',技术:'#00a9e8'};
 const PALETTE = ['#374a67','#d06f3a','#3d8d83','#a45486','#6572c9','#9a782d'];
 const MM = dpi => dpi / 25.4;
 const STORAGE_KEY = 'timetable-workshop-v1';
 const EXPORT_DPI = 450;
-const TABLE_CROP_MM = { x:11.75, y:10.25, width:273.5, height:178.5 };
+const TABLE_CROP_MM = { x:8, y:10.25, width:281, height:178.5 };
 const SMALL_SAFE_MARGIN_MM = 1.2;
 
 let state = loadState();
@@ -152,31 +152,31 @@ function drawHeaderGradient(ctx,text,x,y,w,h,size,font,stops=[
 function renderLarge(dpi=150){
   const canvas=document.createElement('canvas'); canvas.width=Math.round(297*MM(dpi));canvas.height=Math.round(210*MM(dpi));
   const ctx=canvas.getContext('2d',{alpha:false}); ctx.fillStyle='#fff';ctx.fillRect(0,0,canvas.width,canvas.height);
-  const mm=MM(dpi), pt=dpi/72; const x0=12*mm,y0=10.5*mm; const colMm=[38,38,38,38,38,38,45]; const rowMm=[10,11,11,11,9,11,9,11,9,11,11,11,11,11,9,11,11];
+  const mm=MM(dpi), pt=dpi/72; const x0=8*mm,y0=10.5*mm; const colMm=[30,35,35,35,35,35,35,41]; const rowMm=[10,11,11,11,9,11,9,11,9,11,11,11,11,11,9,11,11];
   const xs=[x0];colMm.forEach(v=>xs.push(xs.at(-1)+v*mm)); const ys=[y0];rowMm.forEach(v=>ys.push(ys.at(-1)+v*mm));
   const line=Math.max(1,.5*pt);ctx.strokeStyle='#99ccff';ctx.lineWidth=line;ctx.lineCap='butt';
   // Horizontal rules.
-  ys.forEach(y=>{ctx.beginPath();ctx.moveTo(xs[0],y);ctx.lineTo(xs[7],y);ctx.stroke();});
+  ys.forEach(y=>{ctx.beginPath();ctx.moveTo(xs[0],y);ctx.lineTo(xs[8],y);ctx.stroke();});
   // Outer and time-column verticals.
-  [xs[0],xs[6],xs[7]].forEach(x=>{ctx.beginPath();ctx.moveTo(x,ys[0]);ctx.lineTo(x,ys.at(-1));ctx.stroke();});
-  for(let c=1;c<6;c++){for(let r=0;r<rowMm.length;r++){const row=state.rows[r-1];const merged=r>0&&row?.break;if(!merged){ctx.beginPath();ctx.moveTo(xs[c],ys[r]);ctx.lineTo(xs[c],ys[r+1]);ctx.stroke();}}}
+  [xs[0],xs[7],xs[8]].forEach(x=>{ctx.beginPath();ctx.moveTo(x,ys[0]);ctx.lineTo(x,ys.at(-1));ctx.stroke();});
+  for(let c=1;c<8;c++){for(let r=0;r<rowMm.length;r++){const row=state.rows[r-1];const merged=r>0&&row?.break;if(!merged){ctx.beginPath();ctx.moveTo(xs[c],ys[r]);ctx.lineTo(xs[c],ys[r+1]);ctx.stroke();}}}
   // Top-left diagonal and miniature labels.
   ctx.beginPath();ctx.moveTo(xs[0],ys[0]);ctx.lineTo(xs[1],ys[1]);ctx.stroke();
   setFont(ctx,8.5*pt,'Tianyingzhang');ctx.fillStyle='#111';ctx.fillText('节次',xs[0]+27.5*mm,ys[0]+3.2*mm);ctx.fillText('日期',xs[0]+7*mm,ys[0]+7.2*mm);
   DAYS.forEach((day,i)=>drawHeaderGradient(ctx,day,xs[i+1],ys[0],colMm[i+1]*mm,rowMm[0]*mm,24*pt,'BoyangOuti'));
   const timeGradient=[[0,'#00b050'],[1,'#00b0f0']];
-  drawHeaderGradient(ctx,'时间',xs[6],ys[0],colMm[6]*mm,rowMm[0]*mm,24*pt,'BoyangOuti',timeGradient);
+  drawHeaderGradient(ctx,'时间',xs[7],ys[0],colMm[7]*mm,rowMm[0]*mm,24*pt,'BoyangOuti',timeGradient);
   state.rows.forEach((row,i)=>{
     const r=i+1,y=ys[r],h=rowMm[r]*mm;
     if(row.break){
       const font=row.noon?'STXinwei':'Tianyingzhang';const size=(row.noon?22:20)*pt;const color=row.noon?'#ffc000':'#000';
       const lift=/^(课间操|午休|晚饭)$/.test(row.label.replace(/\s/g,''))?-.65*mm:0;
-      drawCentered(ctx,row.label,xs[0],y,(xs[6]-xs[0]),h,size,font,color,'400',{offsetY:lift});
+      drawCentered(ctx,row.label,xs[0],y,(xs[7]-xs[0]),h,size,font,color,'400',{offsetY:lift});
     }else{
       drawCentered(ctx,row.label,xs[0],y,colMm[0]*mm,h,24*pt,'STXingkai','#000');
       row.subjects.forEach((s,d)=>drawCentered(ctx,s,xs[d+1],y,colMm[d+1]*mm,h,24*pt,'HuakangWawa',subjectColor(s)));
     }
-    drawGradientText(ctx,row.time,xs[6],y,colMm[6]*mm,h,28*pt,'Anjingchen',timeGradient,'700',{offsetY:-.65*mm,skewX:-.045});
+    drawGradientText(ctx,row.time,xs[7],y,colMm[7]*mm,h,28*pt,'Anjingchen',timeGradient,'700',{offsetY:-.65*mm,skewX:-.045});
   });
   const updated=new Date(state.updatedAt || Date.now()); const stamp=`修改于 ${updated.getFullYear()}-${String(updated.getMonth()+1).padStart(2,'0')}-${String(updated.getDate()).padStart(2,'0')}  ${String(updated.getHours()).padStart(2,'0')}:${String(updated.getMinutes()).padStart(2,'0')}:${String(updated.getSeconds()).padStart(2,'0')}`;
   setFont(ctx,10*pt,'STXinwei');ctx.textAlign='left';ctx.fillStyle='#ffe33d';ctx.fillText(stamp,8*mm,204.5*mm);
@@ -274,21 +274,21 @@ function drawPdfGradientText(page,font,text,left,top,width,height,size,stops,sca
   page.pushOperators(PDFLib.popGraphicsState());
 }
 function drawVectorTable(page,fonts,transform,includeFooter){
-  const t=transform,sc=t.scale,col=[38,38,38,38,38,38,45],rows=[10,11,11,11,9,11,9,11,9,11,11,11,11,11,9,11,11];
-  const xs=[12];col.forEach(v=>xs.push(xs.at(-1)+v));const ys=[10.5];rows.forEach(v=>ys.push(ys.at(-1)+v));
+  const t=transform,sc=t.scale,col=[30,35,35,35,35,35,35,41],rows=[10,11,11,11,9,11,9,11,9,11,11,11,11,11,9,11,11];
+  const xs=[8];col.forEach(v=>xs.push(xs.at(-1)+v));const ys=[10.5];rows.forEach(v=>ys.push(ys.at(-1)+v));
   const line=(x1,y1,x2,y2)=>page.drawLine({start:{x:t.x(x1),y:t.y(y1)},end:{x:t.x(x2),y:t.y(y2)},thickness:.5*sc,color:PDFLib.rgb(.6,.8,1)});
-  ys.forEach(y=>line(xs[0],y,xs[7],y));[xs[0],xs[6],xs[7]].forEach(x=>line(x,ys[0],x,ys.at(-1)));
-  for(let c=1;c<6;c++)for(let r=0;r<rows.length;r++){const merged=r>0&&state.rows[r-1]?.break;if(!merged)line(xs[c],ys[r],xs[c],ys[r+1]);}
+  ys.forEach(y=>line(xs[0],y,xs[8],y));[xs[0],xs[7],xs[8]].forEach(x=>line(x,ys[0],x,ys.at(-1)));
+  for(let c=1;c<8;c++)for(let r=0;r<rows.length;r++){const merged=r>0&&state.rows[r-1]?.break;if(!merged)line(xs[c],ys[r],xs[c],ys[r+1]);}
   line(xs[0],ys[0],xs[1],ys[1]);
   const box=(x,y,w,h)=>({left:t.x(x),top:t.y(y),width:w*PT_PER_MM*sc,height:h*PT_PER_MM*sc});
-  let b=box(12,10.5,38,10);drawPdfText(page,fonts.tianying,'节次',t.x(34.5),b.top,10*PT_PER_MM*sc,b.height*.6,8.5,'#111111',sc);drawPdfText(page,fonts.tianying,'日期',b.left,b.top-b.height*.35,b.width*.52,b.height*.65,8.5,'#111111',sc);
+  let b=box(8,10.5,30,10);drawPdfText(page,fonts.tianying,'节次',t.x(30),b.top,10*PT_PER_MM*sc,b.height*.6,8.5,'#111111',sc);drawPdfText(page,fonts.tianying,'日期',b.left,b.top-b.height*.35,b.width*.52,b.height*.65,8.5,'#111111',sc);
   const weekStops=[[0,'#ff0000'],[.51,'#ffff00'],[1,'#00b0f0']],timeStops=[[0,'#00b050'],[1,'#00b0f0']];
   DAYS.forEach((day,i)=>{b=box(xs[i+1],ys[0],col[i+1],rows[0]);drawPdfGradientText(page,fonts.boyang,day,b.left,b.top,b.width,b.height,24,weekStops,sc);});
-  b=box(xs[6],ys[0],col[6],rows[0]);drawPdfGradientText(page,fonts.boyang,'时间',b.left,b.top,b.width,b.height,24,timeStops,sc);
-  state.rows.forEach((row,i)=>{const r=i+1;b=box(xs[0],ys[r],row.break?xs[6]-xs[0]:col[0],rows[r]);
+  b=box(xs[7],ys[0],col[7],rows[0]);drawPdfGradientText(page,fonts.boyang,'时间',b.left,b.top,b.width,b.height,24,timeStops,sc);
+  state.rows.forEach((row,i)=>{const r=i+1;b=box(xs[0],ys[r],row.break?xs[7]-xs[0]:col[0],rows[r]);
     if(row.break){const lift=/^(课间操|午休|晚饭)$/.test(row.label.replace(/\s/g,''))?.65*PT_PER_MM:0;drawPdfText(page,row.noon?fonts.xinwei:fonts.tianying,row.label,b.left,b.top,b.width,b.height,row.noon?22:20,row.noon?'#ffc000':'#000000',sc,{offsetY:lift});}
     else{drawPdfText(page,fonts.xingkai,row.label,b.left,b.top,b.width,b.height,24,'#000000',sc);row.subjects.forEach((s,d)=>{const sb=box(xs[d+1],ys[r],col[d+1],rows[r]);drawPdfText(page,fonts.huakang,s,sb.left,sb.top,sb.width,sb.height,24,subjectColor(s),sc);});}
-    const tb=box(xs[6],ys[r],col[6],rows[r]);drawPdfGradientText(page,fonts.anjing,row.time,tb.left,tb.top,tb.width,tb.height,28,timeStops,sc,{offsetY:.65*PT_PER_MM,skewX:-.045});
+    const tb=box(xs[7],ys[r],col[7],rows[r]);drawPdfGradientText(page,fonts.anjing,row.time,tb.left,tb.top,tb.width,tb.height,28,timeStops,sc,{offsetY:.65*PT_PER_MM,skewX:-.045});
   });
   if(includeFooter){const updated=new Date(state.updatedAt||Date.now()),stamp=`修改于${updated.getFullYear()}-${String(updated.getMonth()+1).padStart(2,'0')}-${String(updated.getDate()).padStart(2,'0')}  ${String(updated.getHours()).padStart(2,'0')}:${String(updated.getMinutes()).padStart(2,'0')}:${String(updated.getSeconds()).padStart(2,'0')}`;page.drawText(stamp,{x:t.x(8),y:t.y(204.5)-5*sc,font:fonts.xinwei,size:10*sc,color:PDFLib.rgb(1,.89,.24)});}
 }
