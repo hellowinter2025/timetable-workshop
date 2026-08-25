@@ -1,0 +1,95 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#f5f7fb">
+  <title>课程表排版工坊</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="ambient ambient-a"></div>
+  <div class="ambient ambient-b"></div>
+  <header class="topbar">
+    <a class="brand" href="#" aria-label="课程表排版工坊首页">
+      <span class="brand-mark" aria-hidden="true"><i></i><i></i><i></i></span>
+      <span><strong>课程表排版工坊</strong><small>填一次，自动生成大版与 8 联打印版</small></span>
+    </a>
+    <div class="save-state" id="saveState"><span></span>已自动保存</div>
+  </header>
+
+  <main class="app-shell">
+    <section class="editor-panel panel">
+      <div class="section-heading">
+        <div><span class="eyebrow">01 · 填写</span><h1>本周课程</h1></div>
+        <div class="editor-actions">
+          <button class="icon-button" id="undoButton" title="撤销" aria-label="撤销">↶</button>
+          <button class="text-button" id="clearButton">清空科目</button>
+          <button class="text-button" id="resetButton">恢复示例</button>
+        </div>
+      </div>
+
+      <div class="mobile-day-tabs" id="dayTabs" aria-label="选择星期"></div>
+      <div class="schedule-editor-wrap">
+        <div class="schedule-editor" id="scheduleEditor"></div>
+      </div>
+
+      <details class="advanced-settings">
+        <summary><span>时间与节次设置</span><small>一般无需修改</small></summary>
+        <div class="settings-grid" id="settingsGrid"></div>
+      </details>
+
+      <div class="data-row">
+        <button class="quiet-button" id="exportDataButton">备份填写内容</button>
+        <a class="quiet-button" href="课程表导入模板.json" download>下载导入模板</a>
+        <a class="quiet-button" href="AI识别课表提示词.md" download>下载 AI 识别提示词</a>
+        <label class="quiet-button file-button">恢复备份<input type="file" id="importDataInput" accept="application/json"></label>
+      </div>
+    </section>
+
+    <section class="preview-panel panel">
+      <div class="section-heading preview-heading">
+        <div><span class="eyebrow">02 · 预览</span><h2>打印成品</h2></div>
+        <div class="view-switch" role="tablist" aria-label="预览版式">
+          <button class="active" data-view="large" role="tab">A4 大版</button>
+          <button data-view="sheet" role="tab">8 联小版</button>
+        </div>
+      </div>
+
+      <div class="paper-stage" id="paperStage">
+        <div class="paper-frame large" id="paperFrame">
+          <canvas id="previewCanvas" aria-label="课程表打印预览"></canvas>
+        </div>
+        <div class="rendering-badge" id="renderingBadge">正在更新预览…</div>
+      </div>
+
+      <div class="fidelity-note">
+        <span class="fidelity-icon">✓</span>
+        <p><strong>已按原 Word 样式复刻</strong><br>原字体、浅蓝细线、科目配色与 A4 尺寸均保留。</p>
+      </div>
+
+      <div class="export-block">
+        <div class="export-title"><span class="eyebrow">03 · 导出</span><span>PDF 适合直接打印，PNG 适合留档或送印</span></div>
+        <div class="export-grid">
+          <button class="export-card primary" id="largePdfButton">
+            <span class="file-icon">PDF</span><span><strong>A4 大版矢量 PDF</strong><small>横向 · 单份 · 无损缩放</small></span><b>↓</b>
+          </button>
+          <button class="export-card" id="sheetPdfButton">
+            <span class="file-icon mint">PDF</span><span><strong>8 联小版矢量 PDF</strong><small>去页脚放大 · 无损缩放</small></span><b>↓</b>
+          </button>
+          <button class="export-card compact" id="largePngButton">
+            <span class="file-icon coral">PNG</span><span><strong>超清大版 PNG</strong><small>450 DPI</small></span><b>↓</b>
+          </button>
+          <button class="export-card compact" id="sheetPngButton">
+            <span class="file-icon sky">PNG</span><span><strong>超清 8 联 PNG</strong><small>A4 纵向 · 450 DPI</small></span><b>↓</b>
+          </button>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <div class="toast" id="toast" role="status"></div>
+  <script src="vendor/pdf-lib.min.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
