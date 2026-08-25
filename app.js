@@ -46,7 +46,10 @@ function defaultState(){ return { rows:cloneRows(DEFAULT_ROWS), updatedAt:new Da
 function loadState(){
   try {
     const saved = JSON.parse(localStorage.getItem(STORAGE_KEY));
-    if (saved?.rows?.length === DEFAULT_ROWS.length) return saved;
+    if (saved?.rows?.length === DEFAULT_ROWS.length) {
+      saved.rows = saved.rows.map(row => row.break ? row : ({...row, subjects:[...(row.subjects || []), ...Array(Math.max(0,DAYS.length-(row.subjects||[]).length)).fill('')].slice(0,DAYS.length)}));
+      return saved;
+    }
   } catch (_) {}
   return defaultState();
 }
@@ -164,7 +167,7 @@ function renderLarge(dpi=150){
   ctx.beginPath();ctx.moveTo(xs[0],ys[0]);ctx.lineTo(xs[1],ys[1]);ctx.stroke();
   setFont(ctx,8.5*pt,'Tianyingzhang');ctx.fillStyle='#111';ctx.fillText('节次',xs[0]+27.5*mm,ys[0]+3.2*mm);ctx.fillText('日期',xs[0]+7*mm,ys[0]+7.2*mm);
   DAYS.forEach((day,i)=>drawHeaderGradient(ctx,day,xs[i+1],ys[0],colMm[i+1]*mm,rowMm[0]*mm,24*pt,'BoyangOuti'));
-  const timeGradient=[[0,'#00b050'],[1,'#00b0f0']];
+  const timeGradient=[[0,'#00a94f'],[.5,'#00c878'],[1,'#00b0f0']];
   drawHeaderGradient(ctx,'时间',xs[7],ys[0],colMm[7]*mm,rowMm[0]*mm,24*pt,'BoyangOuti',timeGradient);
   state.rows.forEach((row,i)=>{
     const r=i+1,y=ys[r],h=rowMm[r]*mm;
