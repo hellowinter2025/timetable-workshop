@@ -21,6 +21,7 @@ const DEFAULT_ROWS = [
   { label:'自习', time:'19:10-21:40', subjects:['化学','英语','物理','数学','生物',''] }
 ];
 const COLORS = {语文:'#ff0000',英语:'#7030a0',数学:'#92d050',物理:'#00b050',化学:'#00b0f0',生物:'#ff66cc',体育:'#0070c0',体活:'#8a58bd',艺术:'#9fca31',班会:'#f1d900',技术:'#00a9e8'};
+const SUBJECT_GRADIENTS = {体活:[[0,'#ff78c8'],[.5,'#9b6bff'],[1,'#43d9e8']]};
 const PALETTE = ['#374a67','#d06f3a','#3d8d83','#a45486','#6572c9','#9a782d'];
 const MM = dpi => dpi / 25.4;
 const STORAGE_KEY = 'timetable-workshop-v1';
@@ -177,7 +178,9 @@ function renderLarge(dpi=150){
       drawCentered(ctx,row.label,xs[0],y,(xs[7]-xs[0]),h,size,font,color,'400',{offsetY:lift});
     }else{
       drawCentered(ctx,row.label,xs[0],y,colMm[0]*mm,h,24*pt,'STXingkai','#000');
-      row.subjects.forEach((s,d)=>drawCentered(ctx,s,xs[d+1],y,colMm[d+1]*mm,h,24*pt,'HuakangWawa',subjectColor(s)));
+      row.subjects.forEach((s,d)=>SUBJECT_GRADIENTS[s]
+        ? drawGradientText(ctx,s,xs[d+1],y,colMm[d+1]*mm,h,24*pt,'HuakangWawa',SUBJECT_GRADIENTS[s])
+        : drawCentered(ctx,s,xs[d+1],y,colMm[d+1]*mm,h,24*pt,'HuakangWawa',subjectColor(s)));
     }
     drawGradientText(ctx,row.time,xs[7],y,colMm[7]*mm,h,28*pt,'Anjingchen',timeGradient,'700',{offsetY:-.65*mm,skewX:-.045});
   });
@@ -290,7 +293,7 @@ function drawVectorTable(page,fonts,transform,includeFooter){
   b=box(xs[7],ys[0],col[7],rows[0]);drawPdfGradientText(page,fonts.boyang,'时间',b.left,b.top,b.width,b.height,24,timeStops,sc);
   state.rows.forEach((row,i)=>{const r=i+1;b=box(xs[0],ys[r],row.break?xs[7]-xs[0]:col[0],rows[r]);
     if(row.break){const lift=/^(课间操|午休|晚饭)$/.test(row.label.replace(/\s/g,''))?.65*PT_PER_MM:0;drawPdfText(page,row.noon?fonts.xinwei:fonts.tianying,row.label,b.left,b.top,b.width,b.height,row.noon?22:20,row.noon?'#ffc000':'#000000',sc,{offsetY:lift});}
-    else{drawPdfText(page,fonts.xingkai,row.label,b.left,b.top,b.width,b.height,24,'#000000',sc);row.subjects.forEach((s,d)=>{const sb=box(xs[d+1],ys[r],col[d+1],rows[r]);drawPdfText(page,fonts.huakang,s,sb.left,sb.top,sb.width,sb.height,24,subjectColor(s),sc);});}
+    else{drawPdfText(page,fonts.xingkai,row.label,b.left,b.top,b.width,b.height,24,'#000000',sc);row.subjects.forEach((s,d)=>{const sb=box(xs[d+1],ys[r],col[d+1],rows[r]);if(SUBJECT_GRADIENTS[s])drawPdfGradientText(page,fonts.huakang,s,sb.left,sb.top,sb.width,sb.height,24,SUBJECT_GRADIENTS[s],sc);else drawPdfText(page,fonts.huakang,s,sb.left,sb.top,sb.width,sb.height,24,subjectColor(s),sc);});}
     const tb=box(xs[7],ys[r],col[7],rows[r]);drawPdfGradientText(page,fonts.anjing,row.time,tb.left,tb.top,tb.width,tb.height,28,timeStops,sc,{offsetY:.65*PT_PER_MM,skewX:-.045});
   });
   if(includeFooter){const updated=new Date(state.updatedAt||Date.now()),stamp=`修改于${updated.getFullYear()}-${String(updated.getMonth()+1).padStart(2,'0')}-${String(updated.getDate()).padStart(2,'0')}  ${String(updated.getHours()).padStart(2,'0')}:${String(updated.getMinutes()).padStart(2,'0')}:${String(updated.getSeconds()).padStart(2,'0')}`;page.drawText(stamp,{x:t.x(8),y:t.y(204.5)-5*sc,font:fonts.xinwei,size:10*sc,color:PDFLib.rgb(1,.89,.24)});}
