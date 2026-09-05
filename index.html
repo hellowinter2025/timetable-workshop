@@ -23,6 +23,7 @@
       <div class="section-heading">
         <div><span class="eyebrow">01 · 填写</span><h1>本周课程</h1></div>
         <div class="editor-actions">
+          <label class="preset-picker">班级<select id="presetSelect"><option value="">选择内置课表</option></select></label>
           <button class="icon-button" id="undoButton" title="撤销" aria-label="撤销">↶</button>
           <button class="text-button" id="clearButton">清空科目</button>
           <button class="text-button" id="resetButton">恢复示例</button>
@@ -90,6 +91,7 @@
 
   <div class="toast" id="toast" role="status"></div>
   <script src="vendor/pdf-lib.min.js"></script>
+  <script src="presets.js"></script>
   <script src="app.js"></script>
 </body>
 </html>

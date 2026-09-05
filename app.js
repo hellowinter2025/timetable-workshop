@@ -104,6 +104,11 @@ function buildEditor(){
   });
   buildSettings();
 }
+function buildPresetSelect(){
+  const select=document.getElementById('presetSelect'); if(!select||!window.TIMETABLE_PRESETS)return;
+  Object.entries(window.TIMETABLE_PRESETS).forEach(([grade,classes])=>Object.keys(classes).forEach(cls=>{const option=document.createElement('option');option.value=`${grade}|${cls}`;option.textContent=`${grade}${cls}`;select.appendChild(option);}));
+  select.addEventListener('change',()=>{const [grade,cls]=(select.value||'|').split('|'),preset=window.TIMETABLE_PRESETS[grade]?.[cls];if(!preset)return;snapshot();let n=0;state.rows.forEach(row=>{if(!row.break&&n<preset.length){row.subjects=preset[n].map(v=>({英:'英语',数:'数学',文:'语文',物:'物理',化:'化学',生:'生物',体:'体育',艺:'艺术',政:'政治',地:'地理',史:'历史',心理:'心理',德育:'德育'}[v]||v));n++;}});saveState();buildEditor();scheduleRender();showToast(`已填充${grade}${cls}白天课表`);});
+}
 function addDiv(className,text,parent){ const div=document.createElement('div'); div.className=className; div.textContent=text; parent.appendChild(div); return div; }
 function buildTabs(){
   const tabs=document.getElementById('dayTabs'); tabs.innerHTML='';
@@ -337,4 +342,4 @@ document.getElementById('sheetPngButton').addEventListener('click',()=>exportPng
 document.getElementById('exportDataButton').addEventListener('click',()=>downloadBlob(new Blob([JSON.stringify(importDocument(),null,2)],{type:'application/json'}),`课程表填写备份-${fileDate()}.json`));
 document.getElementById('importDataInput').addEventListener('change',async e=>{try{const data=JSON.parse(await e.target.files[0].text()),rows=validateImport(data);snapshot();state={rows,updatedAt:data.updatedAt||new Date().toISOString()};saveState();buildEditor();scheduleRender();showToast('标准课表已成功导入');}catch(error){showToast(error.message||'无法读取这个课表文件');}e.target.value='';});
 
-buildTabs();buildEditor();document.getElementById('undoButton').disabled=true;renderPreview();
+buildTabs();buildEditor();buildPresetSelect();document.getElementById('undoButton').disabled=true;renderPreview();

@@ -1,9 +1,10 @@
-@font-face{font-family:BoyangOuti;src:url('assets/fonts/boyang-outi.ttf') format('truetype');font-display:swap}
-@font-face{font-family:HuakangWawa;src:url('assets/fonts/huakang-wawa.ttf') format('truetype');font-display:swap}
-@font-face{font-family:STXingkai;src:url('assets/fonts/stxingkai.ttf') format('truetype');font-display:swap}
-@font-face{font-family:Tianyingzhang;src:url('assets/fonts/tianyingzhang-kaishu.ttf') format('truetype');font-display:swap}
-@font-face{font-family:Anjingchen;src:url('assets/fonts/anjingchen-xingshu.ttf') format('truetype');font-display:swap}
-@font-face{font-family:STXinwei;src:url('assets/fonts/stxinwei.ttf') format('truetype');font-display:swap}
+@font-face{font-family:OpenChinese;src:url('assets/fonts/NotoSansSC-VF.ttf') format('truetype');font-display:swap}
+@font-face{font-family:BoyangOuti;src:local('OpenChinese'),url('assets/fonts/NotoSansSC-VF.ttf') format('truetype');font-display:swap}
+@font-face{font-family:HuakangWawa;src:local('OpenChinese'),url('assets/fonts/NotoSansSC-VF.ttf') format('truetype');font-display:swap}
+@font-face{font-family:STXingkai;src:local('OpenChinese'),url('assets/fonts/NotoSansSC-VF.ttf') format('truetype');font-display:swap}
+@font-face{font-family:Tianyingzhang;src:local('OpenChinese'),url('assets/fonts/NotoSansSC-VF.ttf') format('truetype');font-display:swap}
+@font-face{font-family:Anjingchen;src:local('OpenChinese'),url('assets/fonts/NotoSansSC-VF.ttf') format('truetype');font-display:swap}
+@font-face{font-family:STXinwei;src:local('OpenChinese'),url('assets/fonts/NotoSansSC-VF.ttf') format('truetype');font-display:swap}
 
 :root{--ink:#172033;--muted:#7c879d;--line:#e5e9f2;--panel:rgba(255,255,255,.88);--blue:#5267f3;--blue-dark:#3f50d2;--surface:#f5f7fb;--shadow:0 24px 70px rgba(32,44,82,.12)}
 *{box-sizing:border-box}
@@ -39,5 +40,6 @@ button{color:inherit}
 
 .schedule-editor{min-width:700px;grid-template-columns:64px repeat(6,minmax(92px,1fr))}
 .subject-cell:nth-child(7n){border-right:0}
+.preset-picker{display:flex;align-items:center;gap:6px;color:#7b869b;font-size:11px}.preset-picker select{border:1px solid var(--line);border-radius:8px;background:#fff;padding:7px 8px;color:var(--ink);font-size:11px}
 .break-label{grid-column:1/8}
 @media(max-width:680px){.schedule-editor{min-width:0;grid-template-columns:62px 1fr}.break-label{grid-column:1/3}.schedule-editor[data-mobile-day="5"] .day-5{display:block}}
